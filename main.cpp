@@ -23,6 +23,10 @@ page& select_victim();
  * tracks how many frames have been used */
 int next_avail_frame = 0;   
 
+// std::random_device rd;   /* use seed when testing is done */
+// std::mt19937 gen(rd);
+
+
 std::mt19937 gen(42);
 
 int main(int argc, char *argv[]){
@@ -50,8 +54,7 @@ int main(int argc, char *argv[]){
     for (int i = 0; i < num_cycles; i++) {
         /* get random page */
         std::uniform_int_distribution<int> dist(0, num_pages - 1);
-        // int rand_page = dist(gen);
-        int rand_page = i;
+        int rand_page = dist(gen);
 
         std::cout << "Reading page " << rand_page << std::endl;
         int curr = 0;
