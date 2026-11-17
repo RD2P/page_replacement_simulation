@@ -120,22 +120,6 @@ int main(int argc, char *argv[]){
 page& select_victim(){
     /* iterate over all pages starting at wheel_start */
 
-    /*
-    for all pages to end
-        if not ref and not mod
-            save wheel_start - could wrap
-            return this page
-        if ref and mod
-            ref to false
-        if ref and not mod
-            ref to false
-        if not ref and mod
-            "saving page to disk"
-            mod to false
-        
-    wheel_start = 0
-    */
-
     while (true){
         for (int i = wheel_start; i < num_frames; i++){
             page& p = frames.at(i);
