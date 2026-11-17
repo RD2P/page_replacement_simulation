@@ -51,25 +51,33 @@ int main(int argc, char *argv[]){
         p.modified = false;
     }
 
+    std::uniform_int_distribution<int> gen_rand_page(0, num_pages - 1);
+    std::uniform_int_distribution<int> gen_rand_write(0,1);
     for (int i = 0; i < num_cycles; i++) {
         /* get random page */
-        std::uniform_int_distribution<int> dist(0, num_pages - 1);
-        int rand_page = dist(gen);
+        int rand_page = gen_rand_page(gen);
+        int write = gen_rand_write(gen);
 
-        std::cout << "Reading page " << rand_page << std::endl;
+        if (write){
+            std::cout << "Reading/Writing page " << rand_page << std::endl;
+        } else {
+            std::cout << "Reading page " << rand_page << std::endl;
+        }
+
         int curr = 0;
-        // bool already_slotted = false;
         
         /* check if page is already in a frame */
         while (curr < next_avail_frame){
             if (frames.at(curr).page_num == rand_page) {
                 frames.at(curr).referenced = true;
-                // already_slotted = true;
+                if (write){
+                    frames.at(curr).modified = true;
+                }
                 break;
             }
             curr++;
         }
-
+        
         /* the page is already in a frames */
         if (curr < next_avail_frame){
             continue;
@@ -80,6 +88,9 @@ int main(int argc, char *argv[]){
             /* use next available frame for the page */
             frames.at(next_avail_frame).page_num = rand_page;
             frames.at(next_avail_frame).referenced = true;
+            if (write){
+                frames.at(curr).modified = true;
+            }
             next_avail_frame++;
         } else {
             std::cout << "Page fault. No frames available. Looking for victim...\n";
@@ -87,11 +98,17 @@ int main(int argc, char *argv[]){
             std::cout << "Found victim: page " << victim.page_num << std::endl;
             victim.page_num = rand_page;
             victim.referenced = true;
+            if (write){
+                frames.at(curr).modified = true;
+            }
         }
     }
 }
 
 
+/* implement second chance page replacement algorithm */
 page& select_victim(){
+    /*  */
+
     return frames.at(0);
 }
