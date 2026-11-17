@@ -5,6 +5,7 @@
 
 int num_pages;
 int num_frames;
+int num_cycles;
 
 struct page {
     int page_num;
@@ -19,13 +20,14 @@ std::mt19937 gen(42);
 int main(int argc, char *argv[]){
 
     /* input validation */
-    if (argc != 3){
-        std::cout << "Usage: " << argv[0] << " <num_pages>  <num_frames>\n";
+    if (argc != 4){
+        std::cout << "Usage: " << argv[0] << " <num_pages>  <num_frames> <num_cycles>\n";
         exit(1);
     }
 
     num_pages = std::stoi(argv[1]);
     num_frames = std::stoi(argv[2]);
+    num_cycles = std::stoi(argv[3]);
 
     /* init frames array, simulating physical pages */
     std::vector<page> frames(num_frames);
@@ -36,7 +38,8 @@ int main(int argc, char *argv[]){
         p.modified = false;
     }
 
-    while (true) {
+
+    for (int i = 0; i < num_cycles; i++) {
         /* find random page */
         std::uniform_int_distribution<int> dist(0, num_pages - 1);
         int num = dist(gen); 
