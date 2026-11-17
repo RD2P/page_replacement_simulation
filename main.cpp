@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <random>
 
 int num_pages;
 int num_frames;
@@ -12,6 +13,8 @@ struct page {
 };
 
 struct page *frames;
+
+std::mt19937 gen(42);
 
 int main(int argc, char *argv[]){
 
@@ -31,5 +34,12 @@ int main(int argc, char *argv[]){
         p.page_num  = -1;
         p.referenced = false;
         p.modified = false;
+    }
+
+    while (true) {
+        /* find random page */
+        std::uniform_int_distribution<int> dist(0, num_pages - 1);
+        int num = dist(gen); 
+        std::cout << num << std::endl;
     }
 }
