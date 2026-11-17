@@ -14,12 +14,14 @@ struct page {
     bool modified;
 };
 
-struct page *frames;
-
-void select_victim();
+std::vector<page> frames;
 
 
-int next_avail_frame = 0;   /* tracks how many frames have been used */
+page& select_victim();
+
+/* idx in frames
+ * tracks how many frames have been used */
+int next_avail_frame = 0;   
 
 std::mt19937 gen(42);
 
@@ -37,7 +39,8 @@ int main(int argc, char *argv[]){
     num_cycles = std::stoi(argv[3]);
 
     /* init frames array, simulating physical pages */
-    std::vector<page> frames(num_frames);
+    frames.resize(num_frames);
+
     for (page& p : frames){
         p.page_num  = -1;
         p.referenced = false;
@@ -47,45 +50,45 @@ int main(int argc, char *argv[]){
     for (int i = 0; i < num_cycles; i++) {
         /* get random page */
         std::uniform_int_distribution<int> dist(0, num_pages - 1);
-        int rand_page = dist(gen);
+        // int rand_page = dist(gen);
+        int rand_page = i;
 
         std::cout << "Reading page " << rand_page << std::endl;
         int curr = 0;
-        bool slotted = false;
+        // bool already_slotted = false;
         
         /* check if page is already in a frame */
         while (curr < next_avail_frame){
-            if (frames.at(next_avail_frame).page_num == rand_page) {
-                frames.at(next_avail_frame).referenced = true;
-                slotted = true;
+            if (frames.at(curr).page_num == rand_page) {
+                frames.at(curr).referenced = true;
+                // already_slotted = true;
                 break;
             }
             curr++;
         }
 
         /* the page is already in a frames */
-        if (slotted){
+        if (curr < next_avail_frame){
             continue;
-        }
-
-        /* at this point, either the frames are full or not full */
-
-        /* there's a frame available */
-        if (next_avail_frame < num_frames){
+        } 
+        /* there is available slot */
+        else if (next_avail_frame < num_frames){ 
+            std::cout << "Page fault. There is a frame available.\n";
+            /* use next available frame for the page */
             frames.at(next_avail_frame).page_num = rand_page;
             frames.at(next_avail_frame).referenced = true;
             next_avail_frame++;
         } else {
-            /* choose victim to kick off a frame */
-            // select_victim();
+            std::cout << "Page fault. No frames available. Looking for victim...\n";
+            page& victim = select_victim();
+            std::cout << "Found victim: page " << victim.page_num << std::endl;
+            victim.page_num = rand_page;
+            victim.referenced = true;
         }
-        
-
-
     }
 }
 
 
-void select_victim(){
-
+page& select_victim(){
+    return frames.at(0);
 }
