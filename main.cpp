@@ -34,11 +34,18 @@ int main(int argc, char *argv[]){
         std::cout << " <num_pages>  <num_frames> <num_cycles>\n";
         exit(1);
     }
-
-    /* save args */
+    
+    /* convert and save args */
     num_pages = std::stoi(argv[1]);
     num_frames = std::stoi(argv[2]);
     num_cycles = std::stoi(argv[3]);
+    
+    if (num_pages < 1 || num_frames < 1 || num_cycles < 0 ){
+        std::cout << "Usage: " << argv[0];
+        std::cout << " num_pages > 0,  num_frames > 0, num_cycles >= 0\n";
+        exit(1);
+    }
+
 
     /* init frames array, simulating physical pages */
     frames.resize(num_frames);
