@@ -1,19 +1,23 @@
 .PHONY: clean
 
-CFLAGS=-Wall -Wextra -pedantic
+CFLAGS=-Wall -Wextra -Werror -pedantic
 
-all: dirs build/bin/main
+SRC=src
+BIN=build/bin
+OBJ=build/obj
+
+all: dirs $(BIN)/main
 
 dirs:
-	mkdir -p build build/bin build/obj
+	mkdir -p $(BIN) $(OBJ)
 
-build/bin/main: build/obj/main.o
+$(BIN)/main: $(OBJ)/main.o
 	rm -f main
-	g++ -o build/bin/main build/obj/main.o
-	ln -s build/bin/main main
+	g++ -o $(BIN)/main $(OBJ)/main.o
+	ln -s $(BIN)/main main
 
-build/obj/main.o: main.cpp
-	g++ $(CFLAGS) -c -o build/obj/main.o main.cpp
+$(OBJ)/main.o: $(SRC)/main.cpp
+	g++ $(CFLAGS) -c -o $(OBJ)/main.o $(SRC)/main.cpp
 
 clean:
 	rm -rf build/ main

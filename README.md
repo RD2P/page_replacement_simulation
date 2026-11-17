@@ -50,7 +50,7 @@ The arguments must satisfy:
 The included script builds and runs the example configuration:
 
 ```sh
-./run.sh
+./scripts/run.sh
 ```
 
 ## Algorithm
