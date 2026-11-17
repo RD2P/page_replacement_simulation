@@ -8,6 +8,7 @@ dirs:
 	mkdir -p build build/bin build/obj
 
 build/bin/main: build/obj/main.o
+	rm -f main
 	g++ -o build/bin/main build/obj/main.o
 	ln -s build/bin/main main
 
@@ -15,4 +16,4 @@ build/obj/main.o: main.cpp
 	g++ $(CFLAGS) -c -o build/obj/main.o main.cpp
 
 clean:
-	rm -rf build/
+	rm -rf build/ main
