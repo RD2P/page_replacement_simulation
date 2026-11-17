@@ -100,7 +100,7 @@ int main(int argc, char *argv[]){
             victim.page_num = rand_page;
             victim.referenced = true;
             if (write){
-                frames.at(curr).modified = true;
+                victim.modified = true;
             }
         }
     }
