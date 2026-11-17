@@ -4,4 +4,4 @@ set -e
 
 make
 
-./main 10 5 20
+./main 10 5 10
