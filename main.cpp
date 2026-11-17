@@ -89,7 +89,7 @@ int main(int argc, char *argv[]){
             frames.at(next_avail_frame).page_num = rand_page;
             frames.at(next_avail_frame).referenced = true;
             if (write){
-                frames.at(curr).modified = true;
+                frames.at(next_avail_frame).modified = true;
             }
             next_avail_frame++;
         } else {
