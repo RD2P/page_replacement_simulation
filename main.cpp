@@ -7,7 +7,6 @@ int num_pages;          /* number of virtual pages */
 int num_frames;         /* number of physical frames */
 int num_cycles;         /* number of r/w cycles the simulation runs */
 
-
 struct page {
     int page_num;       /* the page being held by this physical frame */
     bool referenced;
@@ -15,22 +14,20 @@ struct page {
 };
 
 std::vector<page> frames;
-
-
 page& select_victim();
 
-/* idx in frames
- * tracks how many frames have been used */
-int next_avail_frame = 0;   
+int next_avail_frame = 0;   /* idx in frames
+                             * tracks how many frames have been used */
+int wheel_start = 0;        /* index into frames, indicates starting 
+                             * point of selection algorithm */
+
 
 // std::random_device rd;   /* use seed when testing is done */
 // std::mt19937 gen(rd);
-
-
 std::mt19937 gen(42);
 
-int main(int argc, char *argv[]){
 
+int main(int argc, char *argv[]){    
     /* input validation */
     if (argc != 4){
         std::cout << "Usage: " << argv[0];
@@ -38,13 +35,13 @@ int main(int argc, char *argv[]){
         exit(1);
     }
 
+    /* save args */
     num_pages = std::stoi(argv[1]);
     num_frames = std::stoi(argv[2]);
     num_cycles = std::stoi(argv[3]);
 
     /* init frames array, simulating physical pages */
     frames.resize(num_frames);
-
     for (page& p : frames){
         p.page_num  = -1;
         p.referenced = false;
@@ -53,15 +50,19 @@ int main(int argc, char *argv[]){
 
     std::uniform_int_distribution<int> gen_rand_page(0, num_pages - 1);
     std::uniform_int_distribution<int> gen_rand_write(0,1);
+
+    /* main loop simulating a cycle of reading from or writing to a page */
     for (int i = 0; i < num_cycles; i++) {
+        std::cout << "\n(cycle " << i + 1 << "):" << std::endl;
+
         /* get random page */
         int rand_page = gen_rand_page(gen);
         int write = gen_rand_write(gen);
 
         if (write){
-            std::cout << "Reading/Writing page " << rand_page << std::endl;
+            std::cout << "[READ] / [WRITE] page " << rand_page << std::endl;
         } else {
-            std::cout << "Reading page " << rand_page << std::endl;
+            std::cout << "[READ] page " << rand_page << std::endl;
         }
 
         int curr = 0;
@@ -103,6 +104,8 @@ int main(int argc, char *argv[]){
             }
         }
     }
+
+    std::cout << "\n*** Simulation done ***\n";
 }
 
 
