@@ -41,6 +41,15 @@ For example:
 ./main 10 5 10
 ```
 
+Show command-line help with:
+
+```sh
+./main --help
+```
+
+The short form `-h` is also supported. The simulator requires exactly three
+integer positional arguments and rejects invalid values.
+
 The arguments must satisfy:
 
 - `num_pages > 0`: number of virtual pages
