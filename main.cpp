@@ -7,7 +7,6 @@ int num_pages;          /* number of virtual pages */
 int num_frames;         /* number of physical frames */
 int num_cycles;         /* number of r/w cycles the simulation runs */
 
-int next_avail_frame;   /* tracks how many frames have been used */
 
 struct page {
     int page_num;       /* the page being held by this physical frame */
@@ -16,6 +15,11 @@ struct page {
 };
 
 struct page *frames;
+
+void select_victim();
+
+
+int next_avail_frame = 0;   /* tracks how many frames have been used */
 
 std::mt19937 gen(42);
 
@@ -41,9 +45,47 @@ int main(int argc, char *argv[]){
     }
 
     for (int i = 0; i < num_cycles; i++) {
-        /* find random page */
+        /* get random page */
         std::uniform_int_distribution<int> dist(0, num_pages - 1);
-        int num = dist(gen); 
-        std::cout << num << std::endl;
+        int rand_page = dist(gen);
+
+        std::cout << "Reading page " << rand_page << std::endl;
+        int curr = 0;
+        bool slotted = false;
+        
+        /* check if page is already in a frame */
+        while (curr < next_avail_frame){
+            if (frames.at(next_avail_frame).page_num == rand_page) {
+                frames.at(next_avail_frame).referenced = true;
+                slotted = true;
+                break;
+            }
+            curr++;
+        }
+
+        /* the page is already in a frames */
+        if (slotted){
+            continue;
+        }
+
+        /* at this point, either the frames are full or not full */
+
+        /* there's a frame available */
+        if (next_avail_frame < num_frames){
+            frames.at(next_avail_frame).page_num = rand_page;
+            frames.at(next_avail_frame).referenced = true;
+            next_avail_frame++;
+        } else {
+            /* choose victim to kick off a frame */
+            // select_victim();
+        }
+        
+
+
     }
+}
+
+
+void select_victim(){
+
 }
