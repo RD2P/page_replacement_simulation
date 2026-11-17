@@ -111,7 +111,57 @@ int main(int argc, char *argv[]){
 
 /* implement second chance page replacement algorithm */
 page& select_victim(){
-    /*  */
+    /* iterate over all pages starting at wheel_start */
 
-    return frames.at(0);
+    /*
+    for all pages to end
+        if not ref and not mod
+            save wheel_start - could wrap
+            return this page
+        if ref and mod
+            ref to false
+        if ref and not mod
+            ref to false
+        if not ref and mod
+            "saving page to disk"
+            mod to false
+        
+    wheel_start = 0
+    */
+
+    while (true){
+        for (int i = wheel_start; i < num_frames; i++){
+            page& p = frames.at(i);
+
+            /* this page is not reference and modified, use as victim */
+            if (!p.referenced && !p.modified){
+                if (i + 1 < num_frames){
+                    wheel_start = i + 1; 
+                } else {
+                    wheel_start = 0;
+                }
+                return p;
+            }
+
+            /* page has been reference and modified: save page to disk */
+            if (p.referenced && p.modified){
+                std::cout << "Saving page " << p.page_num << " to disk...";
+                p.modified = false;
+            }
+
+            /* page reference but not modified: set reference to false */
+            else if (p.referenced && !p.modified){
+                p.referenced = false;
+            }
+
+            /* page not reference, but modified: save page to disk */
+            else if (!p.referenced && p.modified){
+                std::cout << "Saving page " << p.page_num << " to disk...";
+                p.modified = false;
+            }
+        }
+
+        /* reached the end of frames without finding victim, wrap to beginning */
+        wheel_start = 0;
+    }
 }
