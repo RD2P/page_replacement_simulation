@@ -4,20 +4,15 @@
 #include <vector>
 #include <random>
 
+#include "page_replacement.h"
+
 int num_pages;          /* number of virtual pages */
 int num_frames;         /* number of physical frames */
 int num_cycles;         /* number of r/w cycles the simulation runs */
 
-struct page {
-    int page_num;       /* the page being held by this physical frame */
-    bool referenced;
-    bool modified;
-};
-
 std::vector<page> frames;
 
 
-page& select_victim();
 void print_usage(const char* program_name);
 bool parse_integer(const std::string& value, int& result);
 
@@ -117,7 +112,7 @@ int main(int argc, char *argv[]){
             next_avail_frame++;
         } else {
             std::cout << "Page fault. No frames available. Looking for victim...\n";
-            page& victim = select_victim();
+            page& victim = enhanced_second_chance(frames, wheel_start);
             std::cout << "Found victim: page " << victim.page_num << std::endl;
             victim.page_num = rand_page;
             victim.referenced = true;
@@ -160,47 +155,5 @@ bool parse_integer(const std::string& value, int& result){
         return true;
     } catch (const std::exception&) {
         return false;
-    }
-}
-
-
-/* implement second chance page replacement algorithm */
-page& select_victim(){
-    /* iterate over all pages starting at wheel_start */
-
-    while (true){
-        for (int i = wheel_start; i < num_frames; i++){
-            page& p = frames.at(i);
-
-            /* this page is not reference and modified, use as victim */
-            if (!p.referenced && !p.modified){
-                if (i + 1 < num_frames){
-                    wheel_start = i + 1; 
-                } else {
-                    wheel_start = 0;
-                }
-                return p;
-            }
-
-            /* page has been reference and modified: save page to disk */
-            if (p.referenced && p.modified){
-                std::cout << "Saving page " << p.page_num << " to disk...";
-                p.modified = false;
-            }
-
-            /* page reference but not modified: set reference to false */
-            else if (p.referenced && !p.modified){
-                p.referenced = false;
-            }
-
-            /* page not reference, but modified: save page to disk */
-            else if (!p.referenced && p.modified){
-                std::cout << "Saving page " << p.page_num << " to disk...";
-                p.modified = false;
-            }
-        }
-
-        /* reached the end of frames without finding victim, wrap to beginning */
-        wheel_start = 0;
     }
 }
