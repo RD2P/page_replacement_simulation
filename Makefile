@@ -1,6 +1,6 @@
 .PHONY: clean
 
-CFLAGS=-Wall -Wextra -Werror -pedantic
+CFLAGS=-Wall -Wextra -Werror -pedantic -std=c++11
 
 SRC=src
 BIN=build/bin
