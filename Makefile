@@ -1,4 +1,4 @@
-.PHONY: clean
+.PHONY: clean test
 
 CFLAGS=-Wall -Wextra -Werror -pedantic -std=c++11
 
@@ -24,3 +24,14 @@ $(OBJ)/page_replacement.o: $(SRC)/page_replacement.cpp $(SRC)/page_replacement.h
 
 clean:
 	rm -rf build/ main
+
+test: all
+	@set -e; \
+	./main --help >/dev/null; \
+	./main 10 5 10 >/dev/null; \
+	./main 10 5 0 >/dev/null; \
+	! ./main 0 5 10 >/dev/null 2>&1; \
+	! ./main 10 0 10 >/dev/null 2>&1; \
+	! ./main 10 5 -1 >/dev/null 2>&1; \
+	! ./main 10 5 nope >/dev/null 2>&1; \
+	echo "All tests passed."
