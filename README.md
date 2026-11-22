@@ -62,6 +62,14 @@ The included script builds and runs the example configuration:
 ./scripts/run.sh
 ```
 
+## Test
+
+Run the build and basic command-line tests with:
+
+```sh
+make test
+```
+
 ## Algorithm
 
 Each frame stores:
